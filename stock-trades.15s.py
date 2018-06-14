@@ -163,8 +163,8 @@ if len(sys.argv) == 1:
             entry('---')
             entry('Toggle Alerts:')
             for ticker, stock in stocks.iteritems():
-                color = "green" if stock.get('alert', True) == True else "red"
-                entry('{}'.format(ticker), bash=__file__, param1='toggleAlert', param2=ticker, terminal='false', refresh='true', color=color)
+                alert_icon = ":bell:" if stock.get('alert', True) == True else ":no_bell:"
+                entry('{} {}'.format(alert_icon, ticker), bash=__file__, param1='toggleAlert', param2=ticker, terminal='false', refresh='true')
 
     else:
         create_stocks_file()
