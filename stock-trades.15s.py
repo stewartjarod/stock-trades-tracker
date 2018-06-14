@@ -140,7 +140,7 @@ def PLNow(stocks):
             totalPL += (quote['latestPrice'] - stock['price']) * stock['shares']
             finalOutput += create_output_string(quote, stock) + '\r\n'
 
-        print '{}${:0.2f} | color={}'.format(':chart_with_downwards_trend:' if totalPL < 0 else ':chart_with_upwards_trend:', totalPL, "red" if totalPL < 0 else "green")
+        print '{} Active Trades Total ${:0.2f} | color={}'.format(':chart_with_downwards_trend:' if totalPL < 0 else ':chart_with_upwards_trend:', totalPL, "red" if totalPL < 0 else "green")
         print '---'
         print finalOutput
 
@@ -157,14 +157,14 @@ if len(sys.argv) == 1:
                 stockObjects.append(stock)
             PLNow(stockObjects)
             entry('---')
-            entry('Remove stocks:')
-            for ticker, stock in stocks.iteritems():
-                entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false', refresh='true')
-            entry('---')
             entry('Toggle Alerts:')
             for ticker, stock in stocks.iteritems():
                 alert_icon = ":bell:" if stock.get('alert', True) == True else ":no_bell:"
                 entry('{} {}'.format(alert_icon, ticker), bash=__file__, param1='toggleAlert', param2=ticker, terminal='false', refresh='true')
+            entry('---')
+            entry('Remove stocks:')
+            for ticker, stock in stocks.iteritems():
+                entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false', refresh='true')
 
     else:
         create_stocks_file()
