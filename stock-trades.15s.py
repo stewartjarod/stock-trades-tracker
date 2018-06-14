@@ -61,6 +61,11 @@ def prompt(text='', defaultAnswer='', icon='note', buttons=('Cancel','Ok'), defa
     except subprocess.CalledProcessError:
         pass
 
+def entryString(title='---', **kwargs):
+    args = ' '.join('{}=\'{}\''.format(k,v) for k,v in kwargs.items() if v is not None)
+    if args: args = '|' + args
+    return title + args
+
 def entry(title='---', **kwargs):
     args = ' '.join('{}=\'{}\''.format(k,v) for k,v in kwargs.items() if v is not None)
     if args: args = '|' + args
@@ -101,19 +106,11 @@ def remove_stock_from_stocks_file(ticker):
         f.write(json.dumps(stocks))
 
 def create_output_string(quote, stock):
-    output = stock['stock']
-    output += ": $"
-    output += "{:0.2f} ".format(quote["latestPrice"])
     pl = (quote["latestPrice"] - stock['price']) * stock['shares']
-    output += "(${:0.2f}) ".format(pl)
-
-    output += " L: {:0.2f} ".format(stock['stop'])
-    output += " S: {:0.2f} ".format(stock['sell'])
-
     color = "red" if pl < 0 else "green"
     quote_url = 'https://swingtradebot.com/equities/' + stock['stock']
-    output += " | color=" + color + " href=" + quote_url
-    return output
+    return entryString('{}: ${:0.2f} {:0.2f} [STOP: {:0.2f} / SELL: {:0.2f}]'.format(stock['stock'], quote["latestPrice"], pl, stock['stop'], stock['sell']), color=color, href=quote_url)
+
 
 def PLNow(stocks):
     totalPL=0
