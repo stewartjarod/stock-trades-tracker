@@ -66,6 +66,14 @@ def entry(title='---', **kwargs):
     if args: args = '|' + args
     print(title + args)
 
+def toggle_alert_for_ticker(ticker):
+    stocks = read_stocks_file()
+    stock = stocks[ticker]
+    stock['alert'] = not stock.get('alert', True)
+    stocks[ticker] = stock
+    with open(stocks_file, 'wt') as f:
+        f.write(json.dumps(stocks))
+
 def create_stocks_file():
     with open(stocks_file, 'wt') as f:
         f.write('{}')
@@ -80,24 +88,30 @@ def add_stock_to_stocks_file(stock):
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
 
+def update_stock_in_stocks_file(stock):
+    stocks = read_stocks_file()
+    stocks[stock['stock']] = stock
+    with open(stocks_file, 'wt') as f:
+        f.write(json.dumps(stocks))
+
 def remove_stock_from_stocks_file(ticker):
     stocks = read_stocks_file()
     stocks.pop(ticker, None)
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
 
-def create_output_string(quote, stockObj):
-    output = stockObj['stock']
+def create_output_string(quote, stock):
+    output = stock['stock']
     output += ": $"
     output += "{:0.2f} ".format(quote["latestPrice"])
-    pl = (quote["latestPrice"] - stockObj['price']) * stockObj['shares']
+    pl = (quote["latestPrice"] - stock['price']) * stock['shares']
     output += "(${:0.2f}) ".format(pl)
 
-    output += " L: {:0.2f} ".format(stockObj['stop'])
-    output += " S: {:0.2f} ".format(stockObj['sell'])
+    output += " L: {:0.2f} ".format(stock['stop'])
+    output += " S: {:0.2f} ".format(stock['sell'])
 
-    color = "red" if quote["changePercent"] < 0 else "green"
-    quote_url = 'https://swingtradebot.com/equities/' + stockObj['stock']
+    color = "red" if pl < 0 else "green"
+    quote_url = 'https://swingtradebot.com/equities/' + stock['stock']
     output += " | color=" + color + " href=" + quote_url
     return output
 
@@ -107,22 +121,24 @@ def PLNow(stocks):
 
     if len(stocks) > 0:
         quotes = get_stock_quotes(stocks)
-        for stockObj in stocks:
-            quote = quotes[stockObj['stock']]['quote']
-            stockObj['stop'] = (stockObj['price'] * 0.99)
-            stockObj['sell'] = (stockObj['price'] * 1.05)
+        for stock in stocks:
+            quote = quotes[stock['stock']]['quote']
+            stock['stop'] = (stock['price'] * 0.99)
+            stock['sell'] = (stock['price'] * 1.05)
 
-            if quote['latestPrice'] >= stockObj['sell']:
-                sellTitle = "SELL: {}".format(stockObj['stock'])
-                sellMessage = "Sell Price: {:0.2f}".format(stockObj['sell'])
-                displayNotification(sellMessage, sellTitle, "Pop")
-            elif quote['latestPrice'] <= stockObj['stop']:
-                stopTitle = "STOP LOSS: {}".format(stockObj['stock'])
-                stopMessage = "Stop Price: {:0.2f}".format(stockObj['stop'])
-                displayNotification(stopMessage, stopTitle, "Ping")
+            if quote['latestPrice'] >= stock['sell']:
+                sellTitle = "SELL: {}".format(stock['stock'])
+                sellMessage = "Sell Price: {:0.2f}".format(stock['sell'])
+                if stock.get('alert', True):
+                    displayNotification(sellMessage, sellTitle, "Pop")
+            elif quote['latestPrice'] <= stock['stop']:
+                stopTitle = "STOP LOSS: {}".format(stock['stock'])
+                stopMessage = "Stop Price: {:0.2f}".format(stock['stop'])
+                if stock.get('alert', True):
+                    displayNotification(stopMessage, stopTitle, "Ping")
 
-            totalPL += (quote['latestPrice'] - stockObj['price']) * stockObj['shares']
-            finalOutput += create_output_string(quote, stockObj) + '\r\n'
+            totalPL += (quote['latestPrice'] - stock['price']) * stock['shares']
+            finalOutput += create_output_string(quote, stock) + '\r\n'
 
         print '{}${:0.2f} | color={}'.format(':chart_with_downwards_trend:' if totalPL < 0 else ':chart_with_upwards_trend:', totalPL, "red" if totalPL < 0 else "green")
         print '---'
@@ -144,6 +160,12 @@ if len(sys.argv) == 1:
             entry('Remove stocks:')
             for ticker, stock in stocks.iteritems():
                 entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false', refresh='true')
+            entry('---')
+            entry('Toggle Alerts:')
+            for ticker, stock in stocks.iteritems():
+                color = "green" if stock.get('alert', True) == True else "red"
+                entry('{}'.format(ticker), bash=__file__, param1='toggleAlert', param2=ticker, terminal='false', refresh='true', color=color)
+
     else:
         create_stocks_file()
     entry('---')
@@ -155,3 +177,5 @@ elif len(sys.argv) == 2 and sys.argv[1] == 'add':
     add_stock_to_stocks_file({'stock': stock, 'price': price, 'shares': shares})
 elif len(sys.argv) == 3 and sys.argv[1] == 'remove':
     remove_stock_from_stocks_file(sys.argv[2])
+elif len(sys.argv) == 3 and sys.argv[1] == 'toggleAlert':
+    toggle_alert_for_ticker(sys.argv[2])
