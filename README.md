@@ -1,5 +1,5 @@
 # stock-trades-tracker
-Stock Trades Tracker plugin for BitBar
+Stock Trades Tracker plugin for [BitBar](https://github.com/matryer/bitbar)
 
 ## Future goals for plugin
 - Track exits
