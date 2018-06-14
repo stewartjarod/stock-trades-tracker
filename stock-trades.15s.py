@@ -79,14 +79,12 @@ def add_stock_to_stocks_file(stock):
     stocks[stock['stock']] = stock
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
-    entry('', bash=__file__, terminal='false')
 
 def remove_stock_from_stocks_file(ticker):
     stocks = read_stocks_file()
     stocks.pop(ticker, None)
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
-    entry('', bash=__file__, terminal='false')
 
 def create_output_string(quote, stockObj):
     output = stockObj['stock']
@@ -133,7 +131,7 @@ def PLNow(stocks):
 if len(sys.argv) == 1:
     entry('|templateImage=\'%s\'' % icon)
     entry('---')
-    entry('Add a trade...', bash=__file__, param1='add', terminal='false')
+    entry('Add a trade...', bash=__file__, param1='add', terminal='false', refresh='true')
     entry('---')
     if os.path.isfile(stocks_file):
         stocks = read_stocks_file()
@@ -145,7 +143,7 @@ if len(sys.argv) == 1:
             entry('---')
             entry('Remove stocks:')
             for ticker, stock in stocks.iteritems():
-                entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false')
+                entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false', refresh='true')
     else:
         create_stocks_file()
     entry('---')
