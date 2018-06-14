@@ -9,10 +9,12 @@
 # <bitbar.image>https://raw.githubusercontent.com/stewartjarod/stock-trades-tracker/master/screenshot.png</bitbar.image>
 # <bitbar.dependencies>python</bitbar.dependencies>
 
-import json, urllib2, os, subprocess, sys
+import json, urllib2, os, subprocess, sys, time
+
 icon = "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAPYQAAD2EBqD+naQAAActpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx4bXA6Q3JlYXRvclRvb2w+QWRvYmUgSW1hZ2VSZWFkeTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KKS7NPQAAAW5QTFRFAAAAAAAAAAAAAACAAICAgICAVVVVQEBAMzMzMzNmK1VVM01NLkZGM0REOkJKOEBINEFIOD5LN0NJNUBKN0FGN0FLNUJKOUFJOEBIOEJJNkFHNkFLOEJJOEFIOUJIOEFLN0FKNkJINkFJOEJKN0JKN0FJNkBHNkBKOEJJN0FJNkBIOEJJOEFIOEFKNkFIN0BJNkFINkFKOEBJN0JIN0FINkFJNkBJOEBJOEBIOEJIOEJKN0FJNkJJOEFJN0JJNkFIN0JJN0FKNkFJNkBJOEBJN0FIN0FJN0FJNkBIOEFKN0FJN0FINkFJOEFJN0FIOEFKN0FKNkBJOEBJN0JJN0BJN0FKNkFJOEFJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJOEFJN0FJN0FJN0FJN0FJOEJKOURMOkRMOkRNOkVNOkVOO0VOO0ZOO0ZPPEdPPEdQPUhQPUhRQUxWN2zrtgAAAGx0Uk5TAAECAgICAwQFBQYKCw8fICcpKjAzMz4/QElLS01OUVJTVV5gYWJkZGVmZ2lubnFzdXV3eHl6e3t8fICChImLjZCRlpeXmJmam5yeoqSlpqqtrq6vuru8vMjLzM3P09vf5Obo7u/w8fj5+/z+f4t3XAAAAUtJREFUGBlVwWcjQmEYgOH7abxvZYvI3mTvvbJDZkbnJNnbCQn/XtEHroscwd3V5Ub4T5hLp+cQ/hEwLcsEIUfIUjTc3TWgyBJQOEC0DeJxsGkBB4oMpwZqTx4fT2oB7SSjOVIFVBymrZsbK31QCVRFmjkPhnT90fvTvi8W8+0/vR/V69D8ObGLs9PX28kSiEahZPL27fTsMkZpeDG8GyzAjmlipyC4F17aKiVjzFszhcIwUEzVeMfIcFO2CiuFYBhQtAyr5bhxMLwZ6NzpAMOAlp1Ax1Y/Cqgb7O4Z8oNhIuNrC0sr03ngpOn+OXldDYYJs6m3l48QP7x9vcWAaQKNofVWQchRcHxMjpClXC6Xw+ZPJPyiPMqphT+ilhXlL8Ezs72ReHhIbGzPeBB+2cm/+vpMJZOpz6+rPOz8EnTbxMDI6OjIwES7RoBv8fI7D+ewmsIAAAAASUVORK5CYII="
 
 stocks_file = '/tmp/trade-tracker/stocks.json'
+trade_history = 'tmp/trade-tracker/trades.json'
 if not os.path.isdir('/tmp/trade-tracker'):
     os.mkdir('/tmp/trade-tracker')
 
@@ -79,9 +81,9 @@ def toggle_alert_for_ticker(ticker):
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
 
-def create_stocks_file():
-    with open(stocks_file, 'wt') as f:
-        f.write('{}')
+def create_file(file, data):
+    with open(file, 'wt') as f:
+        f.write(data)
 
 def read_stocks_file():
     with open(stocks_file, 'rt') as f:
@@ -89,9 +91,20 @@ def read_stocks_file():
 
 def add_stock_to_stocks_file(stock):
     stocks = read_stocks_file()
+    stock['buy_time'] = time.time()
     stocks[stock['stock']] = stock
     with open(stocks_file, 'wt') as f:
         f.write(json.dumps(stocks))
+
+def record_trade(ticker, sell_price):
+    stocks = read_stocks_file()
+    trade = stocks[ticker]
+    trade['sell_price'] = sell_price
+    with open(trade_history, 'rt') as f:
+        trades = json.loads(f.read())
+    trade.append(trade)
+    with open(trade_history, 'wt') as f:
+        f.write(json.dumps(trades))
 
 def update_stock_in_stocks_file(stock):
     stocks = read_stocks_file()
@@ -106,7 +119,7 @@ def remove_stock_from_stocks_file(ticker):
         f.write(json.dumps(stocks))
 
 def create_output_string(quote, stock):
-    pl = (quote["latestPrice"] - stock['price']) * stock['shares']
+    pl = (quote["latestPrice"] - stock['buy_price']) * stock['shares']
     color = "red" if pl < 0 else "green"
     quote_url = 'https://swingtradebot.com/equities/' + stock['stock']
     return entryString('{}: ${:0.2f} {:0.2f} [STOP: {:0.2f} / SELL: {:0.2f}]'.format(stock['stock'], quote["latestPrice"], pl, stock['stop'], stock['sell']), color=color, href=quote_url)
@@ -120,8 +133,8 @@ def PLNow(stocks):
         quotes = get_stock_quotes(stocks)
         for stock in stocks:
             quote = quotes[stock['stock']]['quote']
-            stock['stop'] = (stock['price'] * 0.99)
-            stock['sell'] = (stock['price'] * 1.05)
+            stock['stop'] = (stock['buy_price'] * 0.99)
+            stock['sell'] = (stock['buy_price'] * 1.05)
 
             if quote['latestPrice'] >= stock['sell']:
                 sellTitle = "SELL: {}".format(stock['stock'])
@@ -134,7 +147,7 @@ def PLNow(stocks):
                 if stock.get('alert', True):
                     displayNotification(stopMessage, stopTitle, "Ping")
 
-            totalPL += (quote['latestPrice'] - stock['price']) * stock['shares']
+            totalPL += (quote['latestPrice'] - stock['buy_price']) * stock['shares']
             finalOutput += create_output_string(quote, stock) + '\r\n'
 
         print '{} Active Trades Total ${:0.2f} | color={}'.format(':chart_with_downwards_trend:' if totalPL < 0 else ':chart_with_upwards_trend:', totalPL, "red" if totalPL < 0 else "green")
@@ -164,15 +177,18 @@ if len(sys.argv) == 1:
                 entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false', refresh='true')
 
     else:
-        create_stocks_file()
+        create_file(stocks_file, '{}')
+        create_file(trade_history, '[]')
     entry('---')
     entry('Data provided for free by IEX.')
 elif len(sys.argv) == 2 and sys.argv[1] == 'add':
     stock = prompt('Stock symbol')
     price = float(prompt('Price paid per share'))
     shares = int(prompt('How many shares?', '100'))
-    add_stock_to_stocks_file({'stock': stock, 'price': price, 'shares': shares})
+    add_stock_to_stocks_file({'stock': stock, 'buy_price': price, 'shares': shares})
 elif len(sys.argv) == 3 and sys.argv[1] == 'remove':
+    sell_price = float(prompt('Price sold per share?'))
+    record_trade(sys.argv[2], sell_price)
     remove_stock_from_stocks_file(sys.argv[2])
 elif len(sys.argv) == 3 and sys.argv[1] == 'toggleAlert':
     toggle_alert_for_ticker(sys.argv[2])
