@@ -1,7 +1,7 @@
 # stock-trades-tracker
 Stock Trades Tracker plugin for [BitBar](https://github.com/matryer/bitbar)
 
-![](screenshot.png)
+![](screen_shot.png)
 
 ## What is this?
 This is a BitBar plugin that tracks stock trades.
