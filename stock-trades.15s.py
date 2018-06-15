@@ -63,10 +63,10 @@ def prompt(text='', default_answer='', icon='note', buttons=('Cancel', 'Ok'), de
             const app = Application.currentApplication()
             app.includeStandardAdditions = true
             const response = app.displayDialog("{text}", {{
-                default_answer: "{default_answer}",
+                defaultAnswer: "{default_answer}",
                 withIcon: "{icon}",
                 buttons: [{buttonsStr}],
-                default_button: "{defaultButtonStr}"
+                defaultButton: "{defaultButtonStr}"
             }})
             response.textReturned
         '''.format(**d)]).rstrip()
