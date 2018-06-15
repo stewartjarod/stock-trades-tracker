@@ -1,9 +1,21 @@
 # stock-trades-tracker
 Stock Trades Tracker plugin for [BitBar](https://github.com/matryer/bitbar)
 
+![](screenshot.png)
+
+## What is this?
+This is a BitBar plugin that tracks stock trades.
+- Enter a trade after entering the market.
+- Set a notification for Stop Loss and Sell points
+- Track your portfolio over time
+
+
 ## Future goals for plugin
-- Track exits
-- Save full trade in separate file (buy price, sell price, numbers of shares, total gain/loss)
+- Add and track starting capital
+- calculate how large a trade should be given current capital and risk wanting to take
+- Variable Stop/Sell %'s per trade
+- ~~Track exits~~
+- ~~Save full trade in separate file (buy price, sell price, numbers of shares, total gain/loss)~~
 - Track portfolio value over time, am I on track for my goals?
 - Try to hook into Robinhood's API? Other brokerage API's to get trades automagically
 
@@ -12,4 +24,6 @@ Stock Trades Tracker plugin for [BitBar](https://github.com/matryer/bitbar)
 - https://github.com/carlsonorozco/coin-alert
 
 ##### Note to self:
-- Emojis:  https://github.com/diy/NSStringEmojize/blob/master/NSStringEmojize/emojis.h
+- Emojis:  
+    - https://github.com/diy/NSStringEmojize/blob/master/NSStringEmojize/emojis.h
+    - https://www.webpagefx.com/tools/emoji-cheat-sheet/
