@@ -20,7 +20,7 @@ scales_icon = "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAA
 
 # file_path = '' # TODO let user set path, suggest using dropbox...
 stocks_file = '/tmp/trade-tracker/stocks.json'
-trade_history = 'tmp/trade-tracker/trades.json'
+trade_history = '/tmp/trade-tracker/trades.json'
 if not os.path.isdir('/tmp/trade-tracker'):
     os.mkdir('/tmp/trade-tracker')
 
@@ -117,9 +117,12 @@ def record_trade(ticker, sell_price):
     stocks = read_stocks_file()
     trade = stocks[ticker]
     trade['sell_price'] = sell_price
+    trade['sell_time'] = time.time()
+    trade['profit_loss'] = ((trade['sell_price'] - trade['buy_price']) * trade['shares'])
+
     with open(trade_history, 'rt') as f:
         trades = json.loads(f.read())
-    trade.append(trade)
+    trades.append(trade)
     with open(trade_history, 'wt') as f:
         f.write(json.dumps(trades))
 
@@ -180,7 +183,7 @@ def pl_totals(stocks):
             total_pl += (quote['latestPrice'] - stock['buy_price']) * stock['shares']
             final_output += create_output_string(quote, stock) + '\r\n'
 
-        print '{} Active Trades Total ${:0.2f} | color={}'.format(
+        print '{} Active Trades Current P/L ${:0.2f} | color={}'.format(
             ':chart_with_downwards_trend:' if total_pl < 0 else ':chart_with_upwards_trend:', total_pl,
             "red" if total_pl < 0 else "green")
         print '---'
