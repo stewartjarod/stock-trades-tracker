@@ -158,6 +158,15 @@ def create_output_string(quote, stock):
     )
 
 
+def overall_PL():
+    trades = []
+    OverallPL = 0
+    with open(trade_history, 'rt') as f:
+        trades = json.loads(f.read())
+    for trade in trades:
+       OverallPL += trade['profit_loss']
+    entry('Total P/L: ${:0.2f}'.format(OverallPL))
+
 def pl_totals(stocks):
     total_pl = 0
     final_output = ''
@@ -195,6 +204,7 @@ def initialize():
     entry('---')
     entry('Add a trade...', bash=__file__, param1='add', terminal='false', refresh='true')
     entry('---')
+    overall_PL()
     if os.path.isfile(stocks_file):
         stocks = read_stocks_file()
         if len(stocks) > 0:
