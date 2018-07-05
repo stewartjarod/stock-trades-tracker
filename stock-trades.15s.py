@@ -21,8 +21,6 @@ scales_icon = "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAA
 # file_path = '' # TODO let user set path, suggest using dropbox...
 stocks_file = '/tmp/trade-tracker/stocks.json'
 trade_history = '/tmp/trade-tracker/trades.json'
-if not os.path.isdir('/tmp/trade-tracker'):
-    os.mkdir('/tmp/trade-tracker')
 
 
 def display_notification(message, title=None, sound_name=None):
@@ -159,12 +157,11 @@ def create_output_string(quote, stock):
 
 
 def overall_PL():
-    trades = []
     OverallPL = 0
     with open(trade_history, 'rt') as f:
         trades = json.loads(f.read())
-    for trade in trades:
-       OverallPL += trade['profit_loss']
+        for trade in trades:
+           OverallPL += trade['profit_loss']
     entry('Total P/L: ${:0.2f}'.format(OverallPL))
 
 def pl_totals(stocks):
@@ -205,31 +202,37 @@ def initialize():
     entry('Add a trade...', bash=__file__, param1='add', terminal='false', refresh='true')
     entry('---')
     overall_PL()
-    if os.path.isfile(stocks_file):
-        stocks = read_stocks_file()
-        if len(stocks) > 0:
-            stockObjects = []
-            for ticker, stock in stocks.iteritems():
-                stockObjects.append(stock)
-            pl_totals(stockObjects)
-            entry('---')
-            entry('Toggle Alerts:')
-            for ticker, stock in stocks.iteritems():
-                alert_icon = ":bell:" if stock.get('alert', True) is True else ":no_bell:"
-                entry('{} {}'.format(alert_icon, ticker), bash=__file__, param1='toggleAlert', param2=ticker,
-                      terminal='false', refresh='true')
-            entry('---')
-            entry('Remove stocks:')
-            for ticker, stock in stocks.iteritems():
-                entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false',
-                      refresh='true')
-    else:
-        create_file(stocks_file, '{}')
-        create_file(trade_history, '[]')
+    stocks = read_stocks_file()
+    if len(stocks) > 0:
+        stockObjects = []
+        for ticker, stock in stocks.iteritems():
+            stockObjects.append(stock)
+        pl_totals(stockObjects)
+        entry('---')
+        entry('Toggle Alerts:')
+        for ticker, stock in stocks.iteritems():
+            alert_icon = ":bell:" if stock.get('alert', True) is True else ":no_bell:"
+            entry('{} {}'.format(alert_icon, ticker), bash=__file__, param1='toggleAlert', param2=ticker,
+                  terminal='false', refresh='true')
+        entry('---')
+        entry('Remove stocks:')
+        for ticker, stock in stocks.iteritems():
+            entry('{}'.format(ticker), bash=__file__, param1='remove', param2=ticker, terminal='false',
+                  refresh='true')
     entry('---')
     entry('Data provided for free by IEX.')
 
 
+def check_files():
+    if not os.path.isdir('/tmp/trade-tracker'):
+        os.mkdir('/tmp/trade-tracker')
+    if not os.path.isfile(stocks_file):
+        create_file(stocks_file, '{}')
+    if not os.path.isfile(trade_history):
+        create_file(trade_history, '[]')
+
+
+check_files()
 if len(sys.argv) == 1:
     initialize()
 elif len(sys.argv) == 2 and sys.argv[1] == 'add':
