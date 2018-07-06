@@ -17,6 +17,7 @@ This is a BitBar plugin that tracks stock trades.
 - ~~Track exits~~
 - ~~Save full trade in separate file (buy price, sell price, numbers of shares, total gain/loss)~~
 - ~~Track Total P/L for trades~~
+- ~~Log notes about trades~~
 - Allow partial sells + adding to positions
 - Track portfolio value over time, am I on track for my goals?
 - Try to hook into Robinhood's API? Other brokerage API's to get trades automagically

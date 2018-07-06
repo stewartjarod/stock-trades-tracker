@@ -16,11 +16,11 @@ import sys
 import time
 import urllib2
 
-scales_icon = "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAPYQAAD2EBqD+naQAAActpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx4bXA6Q3JlYXRvclRvb2w+QWRvYmUgSW1hZ2VSZWFkeTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KKS7NPQAAAW5QTFRFAAAAAAAAAAAAAACAAICAgICAVVVVQEBAMzMzMzNmK1VVM01NLkZGM0REOkJKOEBINEFIOD5LN0NJNUBKN0FGN0FLNUJKOUFJOEBIOEJJNkFHNkFLOEJJOEFIOUJIOEFLN0FKNkJINkFJOEJKN0JKN0FJNkBHNkBKOEJJN0FJNkBIOEJJOEFIOEFKNkFIN0BJNkFINkFKOEBJN0JIN0FINkFJNkBJOEBJOEBIOEJIOEJKN0FJNkJJOEFJN0JJNkFIN0JJN0FKNkFJNkBJOEBJN0FIN0FJN0FJNkBIOEFKN0FJN0FINkFJOEFJN0FIOEFKN0FKNkBJOEBJN0JJN0BJN0FKNkFJOEFJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJOEFJN0FJN0FJN0FJN0FJOEJKOURMOkRMOkRNOkVNOkVOO0VOO0ZOO0ZPPEdPPEdQPUhQPUhRQUxWN2zrtgAAAGx0Uk5TAAECAgICAwQFBQYKCw8fICcpKjAzMz4/QElLS01OUVJTVV5gYWJkZGVmZ2lubnFzdXV3eHl6e3t8fICChImLjZCRlpeXmJmam5yeoqSlpqqtrq6vuru8vMjLzM3P09vf5Obo7u/w8fj5+/z+f4t3XAAAAUtJREFUGBlVwWcjQmEYgOH7abxvZYvI3mTvvbJDZkbnJNnbCQn/XtEHroscwd3V5Ub4T5hLp+cQ/hEwLcsEIUfIUjTc3TWgyBJQOEC0DeJxsGkBB4oMpwZqTx4fT2oB7SSjOVIFVBymrZsbK31QCVRFmjkPhnT90fvTvi8W8+0/vR/V69D8ObGLs9PX28kSiEahZPL27fTsMkZpeDG8GyzAjmlipyC4F17aKiVjzFszhcIwUEzVeMfIcFO2CiuFYBhQtAyr5bhxMLwZ6NzpAMOAlp1Ax1Y/Cqgb7O4Z8oNhIuNrC0sr03ngpOn+OXldDYYJs6m3l48QP7x9vcWAaQKNofVWQchRcHxMjpClXC6Xw+ZPJPyiPMqphT+ilhXlL8Ezs72ReHhIbGzPeBB+2cm/+vpMJZOpz6+rPOz8EnTbxMDI6OjIwES7RoBv8fI7D+ewmsIAAAAASUVORK5CYII="  # NOQA
+SCALES = "iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAPYQAAD2EBqD+naQAAActpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx4bXA6Q3JlYXRvclRvb2w+QWRvYmUgSW1hZ2VSZWFkeTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KKS7NPQAAAW5QTFRFAAAAAAAAAAAAAACAAICAgICAVVVVQEBAMzMzMzNmK1VVM01NLkZGM0REOkJKOEBINEFIOD5LN0NJNUBKN0FGN0FLNUJKOUFJOEBIOEJJNkFHNkFLOEJJOEFIOUJIOEFLN0FKNkJINkFJOEJKN0JKN0FJNkBHNkBKOEJJN0FJNkBIOEJJOEFIOEFKNkFIN0BJNkFINkFKOEBJN0JIN0FINkFJNkBJOEBJOEBIOEJIOEJKN0FJNkJJOEFJN0JJNkFIN0JJN0FKNkFJNkBJOEBJN0FIN0FJN0FJNkBIOEFKN0FJN0FINkFJOEFJN0FIOEFKN0FKNkBJOEBJN0JJN0BJN0FKNkFJOEFJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJN0FJN0FJN0FJN0FJNkFJN0FJN0FJOEFJN0FJN0FJN0FJN0FJOEJKOURMOkRMOkRNOkVNOkVOO0VOO0ZOO0ZPPEdPPEdQPUhQPUhRQUxWN2zrtgAAAGx0Uk5TAAECAgICAwQFBQYKCw8fICcpKjAzMz4/QElLS01OUVJTVV5gYWJkZGVmZ2lubnFzdXV3eHl6e3t8fICChImLjZCRlpeXmJmam5yeoqSlpqqtrq6vuru8vMjLzM3P09vf5Obo7u/w8fj5+/z+f4t3XAAAAUtJREFUGBlVwWcjQmEYgOH7abxvZYvI3mTvvbJDZkbnJNnbCQn/XtEHroscwd3V5Ub4T5hLp+cQ/hEwLcsEIUfIUjTc3TWgyBJQOEC0DeJxsGkBB4oMpwZqTx4fT2oB7SSjOVIFVBymrZsbK31QCVRFmjkPhnT90fvTvi8W8+0/vR/V69D8ObGLs9PX28kSiEahZPL27fTsMkZpeDG8GyzAjmlipyC4F17aKiVjzFszhcIwUEzVeMfIcFO2CiuFYBhQtAyr5bhxMLwZ6NzpAMOAlp1Ax1Y/Cqgb7O4Z8oNhIuNrC0sr03ngpOn+OXldDYYJs6m3l48QP7x9vcWAaQKNofVWQchRcHxMjpClXC6Xw+ZPJPyiPMqphT+ilhXlL8Ezs72ReHhIbGzPeBB+2cm/+vpMJZOpz6+rPOz8EnTbxMDI6OjIwES7RoBv8fI7D+ewmsIAAAAASUVORK5CYII="  # NOQA
 
-# file_path = '' # TODO let user set path, suggest using dropbox...
-stocks_file = '/tmp/trade-tracker/stocks.json'
-trade_history = '/tmp/trade-tracker/trades.json'
+# Must start with slash
+watching = '/stocks.json'
+history = '/trades.json'
 
 
 def display_notification(message, title=None, sound_name=None):
@@ -72,6 +72,33 @@ def prompt(text='', default_answer='', icon='note', buttons=('Cancel', 'Ok'), de
         pass
 
 
+def create_file(file, data):
+    with open(file, 'wt') as f:
+        f.write(data)
+
+
+# CONFIG
+def get_or_create_filepath():
+    if not os.path.isdir('/tmp/stock-trades-tracker'):
+        os.mkdir('/tmp/stock-trades-tracker')
+
+    if not os.path.isfile('/tmp/stock-trades-tracker/config.json'):
+        path = prompt('Storage Path (PWD)', '/Users/_user_/Dropbox/stock-trades')
+        create_file('/tmp/stock-trades-tracker/config.json', json.dumps({'file_path': path}))
+        return path
+    else:
+        with open('/tmp/stock-trades-tracker/config.json', 'rt') as f:
+            config = json.loads(f.read())
+            if not config['file_path']:
+                path = prompt('Storage Path (PWD)', '/Users/_user_/Dropbox/stock-trades')
+                create_file('/tmp/stock-trades-tracker/config.json', json.dumps({'file_path': path}))
+                return path
+            return config['file_path']
+
+
+file_path = get_or_create_filepath()
+
+
 def entry_string(title='---', **kwargs):
     args = ' '.join('{}=\'{}\''.format(k, v) for k, v in kwargs.items() if v is not None)
     if args: args = '|' + args
@@ -89,17 +116,12 @@ def toggle_alert_for_ticker(ticker):
     stock = stocks[ticker]
     stock['alert'] = not stock.get('alert', True)
     stocks[ticker] = stock
-    with open(stocks_file, 'wt') as f:
+    with open(file_path + watching, 'wt') as f:
         f.write(json.dumps(stocks))
 
 
-def create_file(file, data):
-    with open(file, 'wt') as f:
-        f.write(data)
-
-
 def read_stocks_file():
-    with open(stocks_file, 'rt') as f:
+    with open(file_path + watching, 'rt') as f:
         return json.loads(f.read())
 
 
@@ -107,35 +129,36 @@ def add_stock_to_stocks_file(stock):
     stocks = read_stocks_file()
     stock['buy_time'] = time.time()
     stocks[stock['stock']] = stock
-    with open(stocks_file, 'wt') as f:
+    with open(file_path + watching, 'wt') as f:
         f.write(json.dumps(stocks))
 
 
-def record_trade(ticker, sell_price):
+def record_trade(ticker, sell_price, shares, notes):
     stocks = read_stocks_file()
     trade = stocks[ticker]
     trade['sell_price'] = sell_price
     trade['sell_time'] = time.time()
     trade['profit_loss'] = ((trade['sell_price'] - trade['buy_price']) * trade['shares'])
+    trade['notes'] = notes
 
-    with open(trade_history, 'rt') as f:
+    with open(file_path + history, 'rt') as f:
         trades = json.loads(f.read())
     trades.append(trade)
-    with open(trade_history, 'wt') as f:
+    with open(file_path + history, 'wt') as f:
         f.write(json.dumps(trades))
 
 
 def update_stock_in_stocks_file(stock):
     stocks = read_stocks_file()
     stocks[stock['stock']] = stock
-    with open(stocks_file, 'wt') as f:
+    with open(file_path + watching, 'wt') as f:
         f.write(json.dumps(stocks))
 
 
 def remove_stock_from_stocks_file(ticker):
     stocks = read_stocks_file()
     stocks.pop(ticker, None)
-    with open(stocks_file, 'wt') as f:
+    with open(file_path + watching, 'wt') as f:
         f.write(json.dumps(stocks))
 
 
@@ -158,11 +181,12 @@ def create_output_string(quote, stock):
 
 def overall_PL():
     OverallPL = 0
-    with open(trade_history, 'rt') as f:
+    with open(file_path + history, 'rt') as f:
         trades = json.loads(f.read())
         for trade in trades:
            OverallPL += trade['profit_loss']
     entry('Total P/L: ${:0.2f}'.format(OverallPL))
+
 
 def pl_totals(stocks):
     total_pl = 0
@@ -196,8 +220,8 @@ def pl_totals(stocks):
         print final_output
 
 
-def initialize():
-    entry('|templateImage=\'%s\'' % scales_icon)
+def menu():
+    entry('|templateImage=\'%s\'' % SCALES)
     entry('---')
     entry('Add a trade...', bash=__file__, param1='add', terminal='false', refresh='true')
     entry('---')
@@ -223,26 +247,33 @@ def initialize():
     entry('Data provided for free by IEX.')
 
 
-def check_files():
-    if not os.path.isdir('/tmp/trade-tracker'):
-        os.mkdir('/tmp/trade-tracker')
-    if not os.path.isfile(stocks_file):
-        create_file(stocks_file, '{}')
-    if not os.path.isfile(trade_history):
-        create_file(trade_history, '[]')
+def initialize():
+    if not os.path.isdir(file_path):
+        os.mkdir(file_path)
+    if not os.path.isfile(file_path + watching):
+        create_file(file_path + watching, '{}')
+    if not os.path.isfile(file_path + history):
+        create_file(file_path + history, '[]')
 
 
-check_files()
-if len(sys.argv) == 1:
+def main():
     initialize()
-elif len(sys.argv) == 2 and sys.argv[1] == 'add':
-    stock = prompt('Stock symbol')
-    price = float(prompt('Price paid per share'))
-    shares = int(prompt('How many shares?', '100'))
-    add_stock_to_stocks_file({'stock': stock, 'buy_price': price, 'shares': shares})
-elif len(sys.argv) == 3 and sys.argv[1] == 'remove':
-    sell_price = float(prompt('Price sold per share?'))
-    record_trade(sys.argv[2], sell_price)
-    remove_stock_from_stocks_file(sys.argv[2])
-elif len(sys.argv) == 3 and sys.argv[1] == 'toggleAlert':
-    toggle_alert_for_ticker(sys.argv[2])
+    if len(sys.argv) == 1:
+        menu()
+    elif len(sys.argv) == 2 and sys.argv[1] == 'add':
+        stock = prompt('Stock symbol')
+        price = float(prompt('Price paid per share'))
+        shares = int(prompt('How many shares?', '100'))
+        add_stock_to_stocks_file({'stock': stock, 'buy_price': price, 'shares': shares})
+    elif len(sys.argv) == 3 and sys.argv[1] == 'remove':
+        sell_price = float(prompt('Price sold per share?'))
+        shares = int(prompt('How many shares?', '100'))
+        notes = prompt('Notes about this trade')
+        record_trade(sys.argv[2], sell_price, shares, notes)
+        remove_stock_from_stocks_file(sys.argv[2])
+    elif len(sys.argv) == 3 and sys.argv[1] == 'toggleAlert':
+        toggle_alert_for_ticker(sys.argv[2])
+
+
+# RUN
+main()
