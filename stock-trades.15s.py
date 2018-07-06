@@ -5,7 +5,8 @@
 # <bitbar.version>v1.0</bitbar.version>
 # <bitbar.author>Jarod Stewart</bitbar.author>
 # <bitbar.author.github>stewartjarod</bitbar.author.github>
-# <bitbar.desc>Add and track your stock trades. Shows suggested stop loss and sell points, alerts when meeting either stop or sell price.</bitbar.desc>
+# <bitbar.desc>Add and track your stock trades. Shows suggested stop loss and sell points, alerts when meeting either
+# stop or sell price.</bitbar.desc>
 # <bitbar.image>https://raw.githubusercontent.com/stewartjarod/stock-trades-tracker/master/screenshot.png</bitbar.image>
 # <bitbar.dependencies>python</bitbar.dependencies>
 
@@ -29,13 +30,13 @@ def display_notification(message, title=None, sound_name=None):
         sounds are located in /System/Library/Sounds or ~/Library/Sounds
     """
     title_part = ''
-    if (not title is None):
+    if title is not None:
         title_part = 'with title "{0}"'.format(title)
     # subtitlePart = ''
     # if(not subtitle is None):
     #     subtitlePart = 'subtitle "{0}"'.format(subtitle)
     sound_name_part = ''
-    if not sound_name is None:
+    if sound_name is not None:
         sound_name_part = 'sound name "{0}"'.format(sound_name)
     # icon = 'with icon {0}'.format('caution')
 
@@ -44,11 +45,11 @@ def display_notification(message, title=None, sound_name=None):
 
 
 def get_stock_quotes(stocks):
-    list = []
+    ticker_list = []
     for stock in stocks:
-        list.append(stock['stock'])
+        ticker_list.append(stock['stock'])
     response = urllib2.urlopen(
-        'https://api.iextrading.com/1.0/stock/market/batch?symbols={0}&types=quote'.format(','.join(list)))
+        'https://api.iextrading.com/1.0/stock/market/batch?symbols={0}&types=quote'.format(','.join(ticker_list)))
     return json.loads(response.read())
 
 
@@ -72,8 +73,8 @@ def prompt(text='', default_answer='', icon='note', buttons=('Cancel', 'Ok'), de
         pass
 
 
-def create_file(file, data):
-    with open(file, 'wt') as f:
+def create_file(file_pwd, data):
+    with open(file_pwd, 'wt') as f:
         f.write(data)
 
 
@@ -101,13 +102,15 @@ file_path = get_or_create_filepath()
 
 def entry_string(title='---', **kwargs):
     args = ' '.join('{}=\'{}\''.format(k, v) for k, v in kwargs.items() if v is not None)
-    if args: args = '|' + args
+    if args:
+        args = '|' + args
     return title + args
 
 
 def entry(title='---', **kwargs):
     args = ' '.join('{}=\'{}\''.format(k, v) for k, v in kwargs.items() if v is not None)
-    if args: args = '|' + args
+    if args:
+        args = '|' + args
     print(title + args)
 
 
@@ -140,6 +143,7 @@ def record_trade(ticker, sell_price, shares, notes):
     trade['sell_time'] = time.time()
     trade['profit_loss'] = ((trade['sell_price'] - trade['buy_price']) * trade['shares'])
     trade['notes'] = notes
+    trade['shares'] = shares
 
     with open(file_path + history, 'rt') as f:
         trades = json.loads(f.read())
@@ -179,13 +183,13 @@ def create_output_string(quote, stock):
     )
 
 
-def overall_PL():
-    OverallPL = 0
+def overall_pl():
+    overall_p_l = 0
     with open(file_path + history, 'rt') as f:
         trades = json.loads(f.read())
         for trade in trades:
-           OverallPL += trade['profit_loss']
-    entry('Total P/L: ${:0.2f}'.format(OverallPL))
+            overall_p_l += trade['profit_loss']
+    entry('Total P/L: ${:0.2f}'.format(overall_p_l))
 
 
 def pl_totals(stocks):
@@ -225,13 +229,13 @@ def menu():
     entry('---')
     entry('Add a trade...', bash=__file__, param1='add', terminal='false', refresh='true')
     entry('---')
-    overall_PL()
+    overall_pl()
     stocks = read_stocks_file()
     if len(stocks) > 0:
-        stockObjects = []
+        stock_objects = []
         for ticker, stock in stocks.iteritems():
-            stockObjects.append(stock)
-        pl_totals(stockObjects)
+            stock_objects.append(stock)
+        pl_totals(stock_objects)
         entry('---')
         entry('Toggle Alerts:')
         for ticker, stock in stocks.iteritems():
